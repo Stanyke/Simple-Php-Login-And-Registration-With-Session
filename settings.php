@@ -1,10 +1,7 @@
 <?php
 
-//This we help stabilize/control session
-session_start();
-
 //Check if session is empty (Checks if the user is logged in already)
-if(empty($_SESSION['username']))
+if(empty($_COOKIE['username']))
 {
 	//If the user is not logged in but trying to visit this page, it should bounce him back to login page
   	header('location: login.php');
@@ -18,7 +15,7 @@ include ('functions.php');
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title><?php echo $_SESSION['username']."'s Account Setting"?></title>
+  <title><?php echo $_COOKIE['username']."'s Account Setting"?></title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -58,7 +55,7 @@ include ('functions.php');
 
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
 
-  <a class="navbar-brand" href="index.php">Simple Php Login And Registration With Session</a>
+  <a class="navbar-brand" href="index.php">Simple Php Login And Registration With Cookie</a>
 
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -73,7 +70,7 @@ include ('functions.php');
 				<a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
 				<?php
 				//This is to get current user's details
-				$query = "SELECT * FROM users WHERE username = '".$_SESSION['username']."' LIMIT 1";
+				$query = "SELECT * FROM users WHERE username = '".$_COOKIE['username']."' LIMIT 1";
 				$result = mysqli_query($db, $query);
 
 
@@ -93,12 +90,12 @@ include ('functions.php');
 				}
 				
 				//Diplay current user's username
-				echo $_SESSION['username'];
+				echo $_COOKIE['username'];
 				?>
 				</a>
 				<div class="dropdown-menu">
 					 <form method="post">
-						<button type="submit" name="logout_reg" class="btn btn-danger form-control">Logout</button>
+						<button type="submit" name="logout_user" class="btn btn-danger form-control">Logout</button>
 					</form>
 				</div>
 			</li>
@@ -122,7 +119,7 @@ include('./errors.php');
 
 <?php
 
-$sql = "SELECT * FROM users WHERE username = '".$_SESSION['username']."' LIMIT 1";
+$sql = "SELECT * FROM users WHERE username = '".$_COOKIE['username']."' LIMIT 1";
 $result = mysqli_query($db, $sql);
 
 
@@ -134,7 +131,7 @@ while ($row = mysqli_fetch_array($result))
 <form method="post" enctype="multipart/form-data">
 	<div class="col-sm-6 my-1">
 		<label>USERNAME:</label>
-		<input class="form-control" type="text" name="email" value="<?php echo $_SESSION['username'] ?>" readonly>
+		<input class="form-control" type="text" name="email" value="<?php echo $_COOKIE['username'] ?>" readonly>
 	</div>
 	
 	<div class="col-sm-6 my-1">
