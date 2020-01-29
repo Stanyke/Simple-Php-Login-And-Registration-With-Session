@@ -92,11 +92,12 @@ if (isset($_POST['register_user']))
 			$query = $db->query("INSERT INTO users (fname, lname, username, password, gender, country, state, profile_img, reg_time)VALUES('$your_fname', '$your_lname', '$your_username', '$hash', '$your_gender', '$your_country', '$your_state', '', '$currentTimeAndDate')");
 			
 			
-			//If the saving/registration was successful, store the username in the session
+			//If the saving/registration was successful, store the username in the cookie
 			if($query)
 			{
-				$_SESSION['username'] = $your_username;
-			
+				//This logs in the user and gives a cookie a variable to hold unto and it will be expiring in 30 days (86400 = 1day, 1day * 30 = 30days)
+				setcookie("username", $your_username, time()+ (86400 * 30), "/");
+				
 				header('location: index.php');
 			}
 			
@@ -143,8 +144,8 @@ if (isset($_POST['login_user']))
 			//This checks if the password gotten matches the decryption process is true
 			if(password_verify($your_password, $gottenPassword))
 			{
-				//This logs in the user and gives a session a variable
-				$_SESSION['username'] = $your_username;
+				//This logs in the user and gives a cookie a variable to hold unto and it will be expiring in 30 days (86400 = 1day, 1day * 30 = 30days)
+				setcookie("username", $your_username, time()+ (86400 * 30), "/");
 			
 				//Directs the user to index.php
 				header('location: index.php');
@@ -199,7 +200,7 @@ if (isset($_POST['update_user']))
 				$imgContent = addslashes(file_get_contents($img_tmp_name));
 				
 				//Update users profile image with column name 'profile_img' in the databa with the temporal image file
-				$query = $db->query("UPDATE users SET profile_img='$imgContent' WHERE username = '".$_SESSION['username']."' LIMIT 1");
+				$query = $db->query("UPDATE users SET profile_img='$imgContent' WHERE username = '".$_COOKIE['username']."' LIMIT 1");
 				
 				//pops up a notification to user
 				array_push($errors, '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Profile Image Updated</div>');
@@ -218,6 +219,11 @@ if (isset($_POST['update_user']))
 			array_push($errors, '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Oops!</strong> File selected is not allowed</div>');
 		}
 	}
+	else
+	{
+		//pops up a notification to user when He/She clicks update button but not was their to be updated
+		array_push($errors, '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Nothing Was Selected To Be Updated</div>');
+	}
 }
 
 
@@ -230,11 +236,12 @@ if (isset($_POST['update_user']))
 
 
 
-//If the name data type 'name' with value 'logout_reg' is submitted from the index.php & settings.php pages
-if (isset($_POST['logout_reg']))
+//If the name data type 'name' with value 'logout_user' is submitted from the index.php & settings.php pages
+if (isset($_POST['logout_user']))
 {
-	session_destroy(); //Closes Current User's Session
-  	unset($_SESSION['username']); //Remove the username addedd to the session
-  	header("location: login.php"); //Directs the user back to login page.
+	//This logs in the user and gives a cookie an empty variable to hold unto.
+	setcookie("username", '', time()+ (86400 * 30), "/");
+	
+	header("Location: login.php"); 
 }
 ?>
